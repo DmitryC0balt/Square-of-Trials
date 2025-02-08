@@ -1,26 +1,23 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace Scripts.Root.GameEntryPoint
+using Scripts.Root.RootContainer;
+
+namespace Scripts.Root.EntryPoint
 {
-    public class GameMaster : MonoBehaviour
+    public class SceneNaming
     {
-        [Header("Sound settings")]
-        [SerializeField,Range(0,10)]private int _musicValue;
-        [SerializeField,Range(0,10)]private int _soundValue;
+        public const string BOOT = "Boot";
+        public const string MENU = "Menu";
+        public const string GAME = "Game";
+    }
 
 
-        [Header("Frame settings")]
-        [SerializeField]private bool _highRate;
-
-
-        internal uint GameFrameRate(bool isHigh)
+    public class GameMaster : MonoBehaviour
+    {        
+        internal void Init()
         {
-            if (isHigh)
-            {
-                return 60;
-            }
-            return 30;
+            
         }
-
     }
 }

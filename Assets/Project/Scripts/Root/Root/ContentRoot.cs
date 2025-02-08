@@ -1,3 +1,4 @@
+using Scripts.Root.RootContainer;
 using UnityEngine;
 
 namespace Scripts.Root.Root
@@ -6,7 +7,7 @@ namespace Scripts.Root.Root
     {
         [SerializeField]private Transform _container;
 
-        public void LoadContainer(GameObject container)
+        public void LoadContainer(ContentContainer container)
         {
             CleanContainer();
 

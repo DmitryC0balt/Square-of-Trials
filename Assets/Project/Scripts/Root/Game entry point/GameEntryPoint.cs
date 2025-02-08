@@ -3,12 +3,12 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-using Scripts.Scenes;
 using Scripts.Root.Root;
+using Scripts.Root.RootContainer;
 using Scripts.Root.SceneEntryPoint;
 
 
-namespace Scripts.Root.GameEntryPoint
+namespace Scripts.Root.EntryPoint
 {
     public class GameEntryPoint
     {
@@ -16,6 +16,7 @@ namespace Scripts.Root.GameEntryPoint
 
 
         private GameMaster _gameMaster;
+
         private UIRoot _uiRoot;
         private ContentRoot _contentRoot;
         private SoundRoot _soundRoot;
@@ -28,7 +29,7 @@ namespace Scripts.Root.GameEntryPoint
         {
             _instance = new GameEntryPoint();
 
-            Application.targetFrameRate = (int)_instance._gameMaster.GameFrameRate(true);
+            Application.targetFrameRate = 60;
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
             _instance.StartGame();
@@ -65,17 +66,12 @@ namespace Scripts.Root.GameEntryPoint
 
 #if UNITY_EDITOR
 
-            if (sceneName == SceneNaming.MENU)
+            if ((sceneName == SceneNaming.MENU) || (sceneName == SceneNaming.GAME))
             {
-                _gameMaster.StartCoroutine(LoadMenuScene());
+                _gameMaster.StartCoroutine(LoadTargetScene(sceneName));
                 return;
             }
 
-            if (sceneName == SceneNaming.GAME)
-            {
-                _gameMaster.StartCoroutine(LoadGameScene());
-                return;
-            }
 
             if (sceneName != SceneNaming.BOOT)
             {
@@ -84,12 +80,15 @@ namespace Scripts.Root.GameEntryPoint
 
 #endif
 
-            LoadMenuScene();
+            LoadTargetScene(SceneNaming.MENU);
         }
 
 //===========================================================================================
 
 #region scene_loading
+
+        internal void SwitchScene(string sceneName) => _gameMaster.StartCoroutine(LoadTargetScene(sceneName));
+
 
         private IEnumerator LoadScene(string sceneName)
         {
@@ -97,38 +96,32 @@ namespace Scripts.Root.GameEntryPoint
         }
 
 
-        private IEnumerator LoadMenuScene()
+        private void LoadSceneContainer(SceneEP sceneEntryPoint)
+        {
+            sceneEntryPoint.Run();
+        }
+
+
+        private IEnumerator LoadTargetScene(string sceneName)
         {
             _uiRoot.ShowLoadingScreen(true);
 
             yield return LoadScene(SceneNaming.BOOT);
-            yield return LoadScene(SceneNaming.MENU);
-            yield return new WaitForSeconds(1);
+            yield return LoadScene(sceneName);
+            yield return new WaitForSeconds(1.5f);
 
-            var sceneEntryPoint = Object.FindFirstObjectByType<MenuEntryPoint>();
-            sceneEntryPoint.Run(_gameMaster);
+            var sceneEntryPoint = Object.FindFirstObjectByType<SceneEP>();
+            LoadSceneContainer(sceneEntryPoint);
 
             _uiRoot.ShowLoadingScreen(false);
         }
 
 
-        private IEnumerator LoadGameScene()
-        {
-            _uiRoot.ShowLoadingScreen(true);
-
-            yield return LoadScene(SceneNaming.BOOT);
-            yield return LoadScene(SceneNaming.GAME);
-            yield return new WaitForSeconds(1);
-
-            var sceneEntryPoint = Object.FindFirstObjectByType<GameplayEntryPoint>();
-            sceneEntryPoint.Run(_gameMaster);
-
-            _uiRoot.ShowLoadingScreen(false);
-        }
-    }
+        
 
 #endregion
 
 //===========================================================================================
 
+    }
 }

@@ -1,3 +1,5 @@
+using Scripts.Root.RootContainer;
+
 using UnityEngine;
 
 namespace Scripts.Root.Root
@@ -11,7 +13,7 @@ namespace Scripts.Root.Root
         internal void ShowLoadingScreen(bool value) => _loadingScreen.SetActive(value);
 
 
-        internal void LoadContainer(GameObject container)
+        internal void LoadContainer(UIContainer container)
         {
             CleanContainer();
 
