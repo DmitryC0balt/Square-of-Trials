@@ -114,10 +114,7 @@ namespace Scripts.Root.EntryPoint
             LoadSceneContainer(sceneEntryPoint);
 
             _uiRoot.ShowLoadingScreen(false);
-        }
-
-
-        
+        } 
 
 #endregion
 

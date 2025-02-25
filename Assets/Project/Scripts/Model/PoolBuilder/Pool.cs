@@ -21,22 +21,61 @@ namespace Scripts.Model.ObjectPool
             _isExpandable = isExpandable;
             _count = count;
 
-            _prefabList = new List<Formular>();
+            CreatePool();
         }
 
 
         private void CreatePool()
         {
-
+            _prefabList = new List<Formular>();
+            for (var i = 0; i < _count; i++)
+            {
+                CreateElement();
+            }
         }
 
 
-        private void CreateElement()
+        private Formular CreateElement(bool isActive = false)
         {
-
+            var element = Object.Instantiate(_formular,_container);
+            element.gameObject.SetActive(isActive);
+            _prefabList.Add(element);
+            return element;
         }
 
 
+        private bool HasFreeElement(out Formular element)
+        {
+            element = null;
+
+            foreach(var prefab in _prefabList)
+            {
+                if (!prefab.gameObject.activeInHierarchy)
+                {
+                    element = prefab;
+                    prefab.gameObject.SetActive(true);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        internal Formular GetFreeElement()
+        {
+            if (HasFreeElement(out var element))
+            {
+                return element;
+            }
+
+            if (_isExpandable)
+            {
+                return CreateElement();
+            }
+
+            throw new System.Exception("No more elements in pool");
+        }
 
     }
 }
